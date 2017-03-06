@@ -131,7 +131,7 @@ IsoSurfacer* Editor::extractIsoSurface(const double &isoValue){
 	isosurface->SetTetNeighbors(&tetNeighbors_);
 
 	//QUESTION 21: set index
-
+	
 
 	//update call
 	isosurface->Update();

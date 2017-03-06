@@ -129,8 +129,8 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 }
 
 int IsoSurfacer::ComputeSimpleIntersection(vtkCell *tet){
-	//QUESTION 9
-	/*
+	//QUESTION 9 FAIT
+	
 	vtkIdList* createdPts = vtkIdList::New();
 	vector< pair<vtkIdType,vtkIdType> >  tetEdges; 
 
@@ -138,18 +138,29 @@ int IsoSurfacer::ComputeSimpleIntersection(vtkCell *tet){
 	for (int i = 0; i < tet->GetNumberOfEdges() ; i++)
 	{
 		
+		if (IsCellOnLevelSet(tet->GetEdge(i)))
+		{
+			pair<vtkIdType, vtkIdType> Temp;
+			Temp.first = tet->GetEdge(i)->GetPointId(0);
+			Temp.second = tet->GetEdge(i)->GetPointId(1);
+			tetEdges.push_back(Temp);
 
+		}
 
 	}
 
-
+	ReOrderTetEdges(tetEdges);
 	//for each edge of tetEdges, compute edge intersection and add the new vertex in the createdPts list
 	for (int i = 0; i < tetEdges.size() ; i++)
 	{
-
-
-
+		vector<double> p(3);
+		p = ComputeEdgeIntersection(tetEdges[i]);
+		int newVertexId = Output->GetPoints()->InsertNextPoint(p[0], p[1], p[2]);
+		createdPts->InsertNextId(newVertexId);
 	}
+
+	Output->InsertNextCell(VTK_POLYGON, createdPts);
+	
 
 
 
@@ -159,7 +170,7 @@ int IsoSurfacer::ComputeSimpleIntersection(vtkCell *tet){
 
 	createdPts->Delete();
 
-	*/
+	
 
 	return 0;
 }
@@ -206,9 +217,17 @@ int IsoSurfacer::ReOrderTetEdges(vector<pair<vtkIdType, vtkIdType> > &edgeList) 
 }
 
 int IsoSurfacer::SimpleExtraction(){
-	//QUESTION 10
+	//QUESTION 10 FAIT 
 	//loop on all the tetrahedrons of the mesh
+	int NumberOfCells = Input->GetNumberOfCells();
+	for (int i = 0; i < NumberOfCells; i++)
+	{
+		if (IsCellOnLevelSet(Input->GetCell(i)))
+		{
 
+			ComputeSimpleIntersection(Input->GetCell(i));
+		}
+	}
 	// if the tetrahedron is on the level set, compute the intersection 
 
 	return 0;

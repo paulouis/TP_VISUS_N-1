@@ -139,7 +139,7 @@ class VTK_EXPORT IsoSurfacer : public vtkAlgorithm {
     ~IsoSurfacer();
 	
     inline vector<double> ComputeEdgeIntersection(const pair<vtkIdType, vtkIdType> &edge) const{
-    //QUESTION 8
+    //QUESTION 8 FAIT 
       vector<double> p(3); //new point
 	  
 	  //Get value of edge ends 
