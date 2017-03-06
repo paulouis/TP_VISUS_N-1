@@ -128,10 +128,10 @@ IsoSurfacer* Editor::extractIsoSurface(const double &isoValue){
 		
 
 	//QUESTION 21: set index
-
+	
 
 	//update call
-
+	isosurface->Update();
 	cout << "[Editor] Isosurface extracted in " << t.getElapsedTime()
 		<< " s." <<  endl;
 
