@@ -191,18 +191,37 @@ int Editor::loadInputMesh (const string &fileName){
   
   //QUESTION 14
   //tetNeighbors_ initialisation
-  vtkIdList *cell_id_list = vtkIdList::New(), *points = vtkIdList::New();
+  vtkIdList *cell_id_list = vtkIdList::New(), *points = vtkIdList::New(), *points_tetra = vtkIdList::New();
   std::vector<vtkIdType> voisins;
   for (int i = 0; i < inputMesh_->GetNumberOfCells(); i++)
   {
+	  inputMesh_->GetCellPoints(i, points_tetra);
 	  voisins.clear();
 	  for (int j = 0; j < 4; j++)
 	  {
-		  for (int k = 0; k <= j; k++)
+		  for (int a = j+1; a < 4; a++)
+		  {
+			  for (int b = a+1; b < 4; b++)
+			  {
+				  points->Reset();
+				  points->InsertNextId(points_tetra->GetId(j));
+				  points->InsertNextId(points_tetra->GetId(a));
+				  points->InsertNextId(points_tetra->GetId(b));
+				  inputMesh_->GetCellNeighbors(i, points, cell_id_list);
+				  for (int l = 0; l < cell_id_list->GetNumberOfIds(); l++)
+				  {
+					  voisins.push_back(cell_id_list->GetId(l));
+				  }
+			  }
+		  }
+	  }
+	  for (int a = 0; a < 4; a++)
+	  {
+		  for (int b = a + 1; b < 4; b++)
 		  {
 			  points->Reset();
-			  points->InsertNextId(j);
-			  points->InsertNextId(k);
+			  points->InsertNextId(points_tetra->GetId(a));
+			  points->InsertNextId(points_tetra->GetId(b));
 			  inputMesh_->GetCellNeighbors(i, points, cell_id_list);
 			  for (int l = 0; l < cell_id_list->GetNumberOfIds(); l++)
 			  {

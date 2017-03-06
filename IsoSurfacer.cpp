@@ -75,6 +75,11 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 
 	
 	//re-order the edges
+	ReOrderTetEdges(tetEdges);
+
+
+	int compteur(0);
+
 
 	bool computedIntersection;
 	vector<double> p(3);
@@ -101,6 +106,7 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 							//the intersection is already computed
 							computedIntersection = true;
 							createdPts->InsertNextId(IntersectedEdges[voisins[j]][k]->CreatedVertex);
+							compteur++;
 						}
 						k++;
 					}	
@@ -114,13 +120,6 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 			//computation of the intersection
 			p = ComputeEdgeIntersection(tetEdges[i]);
 			
-			/*
-			if (TetNeighbors->size() <= tetId)
-			{
-				std::cout << "out of range tet neighbors" << std::endl;
-			}
-			*/
-			
 			//creation of a new EdgeIntersection and storing it in edgesIntersected
 			int newVertexId = Output->GetPoints()->InsertNextPoint(p[0], p[1], p[2]);
 			createdPts->InsertNextId(newVertexId);
@@ -132,7 +131,7 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 
 	createdPts->Delete();
 
-	return 0;
+	return compteur;
 }
 
 int IsoSurfacer::ComputeSimpleIntersection(vtkCell *tet){
@@ -242,17 +241,17 @@ int IsoSurfacer::SimpleExtraction(){
 int IsoSurfacer::StandardExtraction(){
 	//QUESTION 17
 	
-	int NumberOfCells = Input->GetNumberOfCells();
+	int NumberOfCells = Input->GetNumberOfCells(), compteur(0);
 	IntersectedEdges = vector< vector<EdgeIntersection*> >(NumberOfCells);
 	for (int i = 0; i < NumberOfCells; i++)
 	{
 		// if the tetrahedron is on the level set, compute the intersection 
 		if (IsCellOnLevelSet(Input->GetCell(i)))
 		{
-			ComputePartialIntersection(i);
+			compteur += ComputePartialIntersection(i);
 		}
 	}
-
+	std::cout << compteur << endl;
 	return 0;
 }
 
