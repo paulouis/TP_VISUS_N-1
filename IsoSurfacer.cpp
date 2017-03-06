@@ -164,6 +164,23 @@ int IsoSurfacer::ComputeSimpleIntersection(vtkCell *tet){
 
 int IsoSurfacer::FastExtraction(){
 	//QUESTION 22
+	int NumberOfCells = Input->GetNumberOfCells();
+	vector<int> *IndicesCellulesCandidates = Index->GetCandidates(Value);
+	
+	for (int i = 0; i < IndicesCellulesCandidates->size(); i++)
+	{
+		
+		if (IsCellOnLevelSet(Input->GetCell(i)))
+		{
+
+			ComputeSimpleIntersection(Input->GetCell(i));
+		}
+	}
+	// if the tetrahedron is on the level set, compute the intersection 
+
+
+
+
 	return 0;
 }
 
