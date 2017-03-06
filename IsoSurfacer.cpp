@@ -47,25 +47,39 @@ IsoSurfacer::~IsoSurfacer(){
 
 int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 	//QUESTION 16
-	/*
+	
 	vtkIdList * createdPts = vtkIdList::New();
-	vector<pair <vtkIdType,vtkIdType> >  tetEdges; 
+	vector<pair <vtkIdType,vtkIdType> >  tetEdges;
 
 	//compute neighbors of tetId and store them in the neighbors variable
-	vector<vtkIdType>& neighbors = TetNeighbors->at(tetId);
-	...
+	vector<vtkIdType>& voisins = TetNeighbors->at(tetId);
 
 
 	//as in ComputeSimpleIntersection, store the edges intersected by the level set in tetEdges
-	...
+	vtkCell *cell = Input->GetCell(tetId), *edge;
+	for (int i = 0; i < cell->GetNumberOfEdges(); i++)
+	{
+		edge = cell->GetEdge(i);
+		if (IsCellOnLevelSet(edge))
+		{
+			if (edge->GetPointId(0) < edge->GetPointId(1))
+			{
+				tetEdges.push_back(pair<vtkIdType, vtkIdType>(edge->GetPointId(0), edge->GetPointId(1)));
+			}
+			else
+			{
+				tetEdges.push_back(pair<vtkIdType, vtkIdType>(edge->GetPointId(1), edge->GetPointId(0)));
+			}
+		}
+	}
 
 	
 	//re-order the edges
-	...
 
-
+	bool deja_traite;
 	for (int i = 0; i < tetEdges.size() ; i++)
 	{
+		deja_traite = false;
 		//edge i
 		bool computedIntersection = false; //computedIntersection is true if the intersection of this edge has been already computed
 
@@ -74,19 +88,18 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 		while (j < voisins.size() && !deja_traite)
 		{
 			//only neighboors intersected with the level-set and with an id inferior to tetId are good candidates 
-			if (...)
+			if (voisins[j]<tetId && IsCellOnLevelSet(Input->GetCell(voisins[j])))
 			{
 					// for each good candidate, we compare his already computed intersected edges to the current edge i
 					int k = 0;
-					while (k < edgesIntersected[voisins[j]].size() && !deja_traite)
+					while (k < IntersectedEdges[voisins[j]].size() && !deja_traite)
 					{
-						EdgeIntersection* edgeintersection = edgesIntersected[voisins[j]][k];
+						EdgeIntersection* edgeintersection = IntersectedEdges[voisins[j]][k];
 						//if the edge vertex ids are the same
-						if ( ...)
+						if (edgeintersection->SameEdge(tetEdges[i]))
 						{
 							//the intersection is already computed
 							computedIntersection = true;
-							.....
 						}
 						k++;
 					}	
@@ -98,11 +111,11 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 		if (!deja_traite)
 		{
 			//computation of the intersection
-			....
+			
 
 
 			//creation of a new EdgeIntersection and storing it in edgesIntersected
-			...
+			
 		}	
 	}
 
@@ -110,7 +123,7 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 	...
 
 
-	createdPts->Delete();*/
+	createdPts->Delete();
 
 	return 0;
 }

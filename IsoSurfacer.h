@@ -105,6 +105,13 @@ class EdgeIntersection {
 	   {
 		   CreatedVertex = vert;
 	   }
+	   inline bool SameEdge(const pair<vtkIdType, vtkIdType>& edge)
+	   {
+		   return ((this->EdgeVertexIds.first== edge.first
+					&& this->EdgeVertexIds.second == edge.second)
+			   || (this->EdgeVertexIds.first == edge.second
+				   && this->EdgeVertexIds.second == edge.first));
+	   }
 
     
 };
@@ -130,19 +137,26 @@ class VTK_EXPORT IsoSurfacer : public vtkAlgorithm {
     
     IsoSurfacer();
     ~IsoSurfacer();
-    
+	
     inline vector<double> ComputeEdgeIntersection(const pair<vtkIdType, vtkIdType> &edge) const{
     //QUESTION 8
       vector<double> p(3); //new point
 	  
 	  //Get value of edge ends 
-
-
+	  double EdgeValue1 = Input->GetPointData()->GetScalars()->GetComponent(edge.first, 0);
+	  double EdgeValue2 = Input->GetPointData()->GetScalars()->GetComponent(edge.second, 0);
 	  //Get coordinates of edge ends
-
+	  double *EdgePoint1 = new double[3];
+	  double *EdgePoint2 = new double[3];
+	 
+	  Input->GetPoint(edge.first,EdgePoint1);
+	  Input->GetPoint(edge.second,EdgePoint2);
 
 	  //Compute the coordinate of the intersection 
-      
+	  double t = (Value - EdgeValue2) / (EdgeValue1 - EdgeValue2);
+	  p[0] = EdgePoint1[0] * t + (1 - t)*EdgePoint2[0];
+	  p[1] = EdgePoint1[1] * t + (1 - t)*EdgePoint2[1];
+	  p[2] = EdgePoint1[2] * t + (1 - t)*EdgePoint2[2];
       return p;
     };
     
