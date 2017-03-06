@@ -128,6 +128,13 @@ class EdgeIntersection {
 	   {
 		   CreatedVertex = vert;
 	   }
+	   inline bool SameEdge(const pair<vtkIdType, vtkIdType>& edge)
+	   {
+		   return ((this->EdgeVertexIds.first== edge.first
+					&& this->EdgeVertexIds.second == edge.second)
+			   || (this->EdgeVertexIds.first == edge.second
+				   && this->EdgeVertexIds.second == edge.first));
+	   }
 
     
 };
