@@ -121,16 +121,19 @@ IsoSurfacer* Editor::extractIsoSurface(const double &isoValue){
 	DebugTimer t;
 	//QUESTION 6
 	IsoSurfacer* isosurface = IsoSurfacer::New();
-	//set input data and isovalue 
-
+	isosurface->SetType(Editor::type_);
+	//set input data and isovalue
+	isosurface->SetInput(inputMesh_);
+	isosurface->SetValue(isoValue);
 
 	//QUESTION 15:set neighbors
-		
+	isosurface->SetTetNeighbors(&tetNeighbors_);
 
 	//QUESTION 21: set index
 
 
 	//update call
+	isosurface->Update();
 
 	cout << "[Editor] Isosurface extracted in " << t.getElapsedTime()
 		<< " s." <<  endl;
@@ -187,8 +190,18 @@ int Editor::loadInputMesh (const string &fileName){
   
   //QUESTION 14
   //tetNeighbors_ initialisation
-  
-
+  vtkIdList *pt_id_list, *cell_id_list;
+  std::vector<vtkIdType> voisins;
+  for (int i = 0; i < inputMesh_->GetNumberOfCells(); i++)
+  {
+	  voisins.clear();
+	  inputMesh_->GetCellNeighbors(i, pt_id_list, cell_id_list);
+	  for (int j = 0; j < cell_id_list->GetNumberOfIds(); j++)
+	  {
+		  voisins.push_back(cell_id_list->GetId(j));
+	  }
+	  tetNeighbors_.push_back(voisins);
+  }
 
 
   //QUESTION 20
