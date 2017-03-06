@@ -28,7 +28,7 @@ int printUsage(const string binPath){
 int main(int argc, char **argv) {
 
 	//data set
-  string inputFileName = "data/post.vtu";
+  string inputFileName = "../data/post.vtu";
 
 
   if(!inputFileName.length()){

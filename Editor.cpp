@@ -65,6 +65,7 @@ int Editor::addIsoSurface(const double &isoValue, const bool &useVtk){
   if(useVtk){
     vtkContourGrid *isoSurfacer = extractIsoSurfaceVTK(isoValue);
     if(isoSurfacer){
+
       isoSurfaceList_.push_back(isoSurfacer->GetOutput());
       vtkIsoSurfacers_.push_back(isoSurfacer);
       isoSurfacers_.push_back(NULL);
@@ -143,10 +144,11 @@ vtkContourGrid* Editor::extractIsoSurfaceVTK(const double &isoValue){
   //QUESTION 4
   vtkContourGrid* isosurface = vtkContourGrid::New();
   //set input data and isovalue
-
+  isosurface->SetInputData(inputMesh_);
+  isosurface->SetValue(1, isoValue);
 
   //update call
-  //isosurface->Update();
+  isosurface->Update();
 
   cout << "[Editor] Isosurface extracted in " << t.getElapsedTime()
     << " s." << endl;
