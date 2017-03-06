@@ -131,7 +131,7 @@ IsoSurfacer* Editor::extractIsoSurface(const double &isoValue){
 	isosurface->SetTetNeighbors(&tetNeighbors_);
 
 	//QUESTION 21: set index
-	
+	isosurface->SetIndex(&tetIndex_);
 
 	//update call
 	isosurface->Update();
@@ -234,8 +234,34 @@ int Editor::loadInputMesh (const string &fileName){
 
 
   //QUESTION 20
+  tetIndex_.SetResolution(10000);
   //tetIndex_ initialisation (interval table)
+  for (int i = 0; i < inputMesh_->GetNumberOfCells(); i++)
+  {
 
+	  int min = inputMesh_->GetPointData()->GetScalars()->GetComponent(inputMesh_->GetCell(i)->GetPointId(0), 0);
+	  int max = inputMesh_->GetPointData()->GetScalars()->GetComponent(inputMesh_->GetCell(i)->GetPointId(0), 0);
+	  for (int j = 0; j< inputMesh_->GetCell(i)->GetNumberOfPoints();j++)
+	  { 
+		 vtkIdType Id = inputMesh_->GetCell(i)->GetPointId(j);
+		 double value = inputMesh_->GetPointData()->GetScalars()->GetComponent(Id, 0);
+			if (value < min)
+			{
+				min = value;
+
+			}
+			else if (value > max)
+			{
+
+				max = value;
+			}
+	  
+	  }
+	 
+	  tetIndex_.AddTet(i, min, max);
+
+  }
+  
 
 
   return 0;

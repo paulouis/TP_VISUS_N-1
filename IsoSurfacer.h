@@ -60,14 +60,37 @@ class TetIndex{
 
 	inline void AddTet(vtkIdType tetId, int minTet, int maxTet)
 	{
-		//QUESTION 18
+		//QUESTION 18 FAIT
+		double Amplitude = (Fmax - Fmin) / resolution;
+		for (int i = 0; i < resolution; i++)
+		{
+			int BorneInf = i*Amplitude;
+			int BorneSup = (i + 1)*Amplitude;
+
+			if (BorneInf > minTet && BorneInf > maxTet)
+			{
+
+			}
+			else if (BorneSup <= minTet && BorneSup <= maxTet && !(BorneSup == maxTet && BorneSup == minTet))
+			{
+			}
+			else
+			{
+				table[i].push_back(tetId);
+
+			}
+		}
 		//WARNING: special case if isoValue = Fmax
 
 	}
 
 	inline vector<vtkIdType>* GetCandidates(double isoValue)
 	{
-		//QUESTION 19
+		double Amplitude = (Fmax - Fmin) / resolution;
+		int Res = isoValue / Amplitude ;
+		
+		return &table[Res];
+		//QUESTION 19 FAIT
 		//what is the interval of the isovalue?
 		//WARNING: special case if isoValue = Fmax
 
