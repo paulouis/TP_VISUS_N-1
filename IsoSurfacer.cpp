@@ -52,8 +52,8 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 	vector<pair <vtkIdType,vtkIdType> >  tetEdges;
 
 	//compute neighbors of tetId and store them in the neighbors variable
-	vector<vtkIdType>& voisins = TetNeighbors->at(tetId);
 
+	vector<vtkIdType>& voisins = TetNeighbors->at(tetId);
 
 	//as in ComputeSimpleIntersection, store the edges intersected by the level set in tetEdges
 	vtkCell *cell = Input->GetCell(tetId), *edge;
@@ -76,23 +76,23 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 	
 	//re-order the edges
 
-	bool deja_traite;
-	for (int i = 0; i < tetEdges.size() ; i++)
+	bool computedIntersection;
+	vector<double> p(3);
+	for (unsigned int i = 0; i < tetEdges.size() ; i++)
 	{
-		deja_traite = false;
 		//edge i
-		bool computedIntersection = false; //computedIntersection is true if the intersection of this edge has been already computed
+		computedIntersection = false; //computedIntersection is true if the intersection of this edge has been already computed
 
 		//looping on the neighbors of tetId to see whether the edge intersection has already been computed 
-		int j = 0;
-		while (j < voisins.size() && !deja_traite)
+		unsigned int j = 0;
+		while (j < voisins.size() && !computedIntersection)
 		{
 			//only neighboors intersected with the level-set and with an id inferior to tetId are good candidates 
 			if (voisins[j]<tetId && IsCellOnLevelSet(Input->GetCell(voisins[j])))
 			{
 					// for each good candidate, we compare his already computed intersected edges to the current edge i
-					int k = 0;
-					while (k < IntersectedEdges[voisins[j]].size() && !deja_traite)
+					unsigned int k = 0;
+					while (k < IntersectedEdges[voisins[j]].size() && !computedIntersection)
 					{
 						EdgeIntersection* edgeintersection = IntersectedEdges[voisins[j]][k];
 						//if the edge vertex ids are the same
@@ -100,6 +100,7 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 						{
 							//the intersection is already computed
 							computedIntersection = true;
+							createdPts->InsertNextId(IntersectedEdges[voisins[j]][k]->CreatedVertex);
 						}
 						k++;
 					}	
@@ -108,19 +109,25 @@ int IsoSurfacer::ComputePartialIntersection(const int &tetId){
 		}
 
 		//if intersection not already computed
-		if (!deja_traite)
+		if (!computedIntersection)
 		{
 			//computation of the intersection
+			p = ComputeEdgeIntersection(tetEdges[i]);
 			
-
-
+			/*
+			if (TetNeighbors->size() <= tetId)
+			{
+				std::cout << "out of range tet neighbors" << std::endl;
+			}
+			*/
+			
 			//creation of a new EdgeIntersection and storing it in edgesIntersected
-			
-		}	
+			int newVertexId = Output->GetPoints()->InsertNextPoint(p[0], p[1], p[2]);
+			createdPts->InsertNextId(newVertexId);
+		}
 	}
-
 	//insert the created ids in the output surface
-	...
+	Output->InsertNextCell(VTK_POLYGON, createdPts);
 
 
 	createdPts->Delete();
@@ -151,7 +158,7 @@ int IsoSurfacer::ComputeSimpleIntersection(vtkCell *tet){
 
 	ReOrderTetEdges(tetEdges);
 	//for each edge of tetEdges, compute edge intersection and add the new vertex in the createdPts list
-	for (int i = 0; i < tetEdges.size() ; i++)
+	for (unsigned int i = 0; i < tetEdges.size() ; i++)
 	{
 		vector<double> p(3);
 		p = ComputeEdgeIntersection(tetEdges[i]);
@@ -222,20 +229,29 @@ int IsoSurfacer::SimpleExtraction(){
 	int NumberOfCells = Input->GetNumberOfCells();
 	for (int i = 0; i < NumberOfCells; i++)
 	{
+		// if the tetrahedron is on the level set, compute the intersection 
 		if (IsCellOnLevelSet(Input->GetCell(i)))
 		{
-
 			ComputeSimpleIntersection(Input->GetCell(i));
 		}
 	}
-	// if the tetrahedron is on the level set, compute the intersection 
 
 	return 0;
 }
 
 int IsoSurfacer::StandardExtraction(){
 	//QUESTION 17
-
+	
+	int NumberOfCells = Input->GetNumberOfCells();
+	IntersectedEdges = vector< vector<EdgeIntersection*> >(NumberOfCells);
+	for (int i = 0; i < NumberOfCells; i++)
+	{
+		// if the tetrahedron is on the level set, compute the intersection 
+		if (IsCellOnLevelSet(Input->GetCell(i)))
+		{
+			ComputePartialIntersection(i);
+		}
+	}
 
 	return 0;
 }

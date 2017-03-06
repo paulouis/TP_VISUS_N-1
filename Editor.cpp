@@ -191,15 +191,24 @@ int Editor::loadInputMesh (const string &fileName){
   
   //QUESTION 14
   //tetNeighbors_ initialisation
-  vtkIdList *pt_id_list, *cell_id_list;
+  vtkIdList *cell_id_list = vtkIdList::New(), *points = vtkIdList::New();
   std::vector<vtkIdType> voisins;
   for (int i = 0; i < inputMesh_->GetNumberOfCells(); i++)
   {
 	  voisins.clear();
-	  inputMesh_->GetCellNeighbors(i, pt_id_list, cell_id_list);
-	  for (int j = 0; j < cell_id_list->GetNumberOfIds(); j++)
+	  for (int j = 0; j < 4; j++)
 	  {
-		  voisins.push_back(cell_id_list->GetId(j));
+		  for (int k = 0; k <= j; k++)
+		  {
+			  points->Reset();
+			  points->InsertNextId(j);
+			  points->InsertNextId(k);
+			  inputMesh_->GetCellNeighbors(i, points, cell_id_list);
+			  for (int l = 0; l < cell_id_list->GetNumberOfIds(); l++)
+			  {
+				  voisins.push_back(cell_id_list->GetId(l));
+			  }
+		  }
 	  }
 	  tetNeighbors_.push_back(voisins);
   }
