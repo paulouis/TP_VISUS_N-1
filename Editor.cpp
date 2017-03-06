@@ -121,8 +121,8 @@ IsoSurfacer* Editor::extractIsoSurface(const double &isoValue){
 	//QUESTION 6
 	IsoSurfacer* isosurface = IsoSurfacer::New();
 	//set input data and isovalue 
-
-
+	isosurface->SetInput(inputMesh_);
+	isosurface->SetValue(isoValue);
 	//QUESTION 15:set neighbors
 		
 
